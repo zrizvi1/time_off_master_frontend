@@ -1,7 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const PasswordResetTokenForm = (props) => {
+  const [formData, setFormData] = useState({
+    email: ""
+  });
+
+  const [errors, setErrors] = useState({});
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const validateForm = () => {
+    let formErrors = {};
+    if (!formData.email) formErrors.email = "Email is required";
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      const { email } = formData;
+      props.onPasswordReset({ email });
+    }
+  };
   return (
     <>
       <section className="vh-100" style={{ backgroundColor: "#eee" }}>
@@ -13,17 +39,25 @@ const PasswordResetTokenForm = (props) => {
                   <div className="row justify-content-center">
                     <div className="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                       <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Reset Password</p>
-                      <form className="mx-1 mx-md-4">
+                      <form className="mx-1 mx-md-4" onSubmit={handleSubmit}>
                         <div className="d-flex flex-row align-items-center mb-4">
                           <i className="fas fa-envelope fa-lg me-3 fa-fw"></i>
                           <div className="form-outline flex-fill mb-0">
-                            <input type="email" id="form3Example3c" className="form-control" />
+                          <input
+                              type="email"
+                              id="form3Example3c"
+                              className="form-control"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleChange}
+                            />
                             <label className="form-label" htmlFor="form3Example3c">Your Email</label>
+                            {errors.email && <div className="text-danger">{errors.email}</div>}
                           </div>
                         </div>
 
                         <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                          <button type="button" className="btn btn-primary btn-lg">Send Password Reset Link</button>
+                          <button type="submit" className="btn btn-primary btn-lg">Send Password Reset Link</button>
                         </div>
                       </form>
                       <p className="text-center">
